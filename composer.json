@@ -1,0 +1,41 @@
+{
+    "name": "ambersive/pdfprinter",
+    "description": "This package provides a simple wrapper for the ",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Manuel.PirkerIhl",
+            "email": "manuel.pirker-ihl@ambersive.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "illuminate/support": "6.*|7.*|8.*",
+        "phlak/semver": "^3.2",
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "require-dev": {
+        "php" : ">=7.4",
+        "illuminate/support": "5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*",
+        "laravel/framework": "5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "AMBERSIVE\\PdfPrinter\\": "src/"
+        }
+    },
+    "extra": {
+        "component": "package",
+        "laravel": {
+            "providers": [
+                "AMBERSIVE\\PdfPrinter\\PdfPrinterServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": [
+            "@composer install",
+            "vendor/bin/phpunit"
+        ]
+    }
+}
