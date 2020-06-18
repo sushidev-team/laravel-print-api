@@ -6,7 +6,7 @@ use AMBERSIVE\PdfPrinter\Interfaces\PdfPrinterInterface;
 use AMBERSIVE\PdfPrinter\Classes\PdfPrinterOption;
 
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
+use \GuzzleHttp\Client;
 
 use \Illuminate\Http\Response;
 
@@ -16,16 +16,17 @@ use Str;
 
 class PdfPrinter implements PdfPrinterInterface {
 
-    public PdfPrinterResult $result;
+    public ?PdfPrinterResult $result;
     public PdfPrinterSetting $settings;
     public Client $client;
 
     public String $authType;
     public String $authToken;
 
-    public function __construct(PdfPrinterSetting $settings) {
+    public function __construct(PdfPrinterSetting $settings = null, \GuzzleHttp\Client $client) {
         $this->settings = $settings;
-        $this->client   = new Client();
+        $this->client   = $client !== null ? $client : new Client();
+        $this->authType = "";
     }
 
     public function authBasic(String $type, String $username, String $password): PdfPrinter {
@@ -63,7 +64,7 @@ class PdfPrinter implements PdfPrinterInterface {
 
             $headers = [];
 
-            if ($this->authType !== null) {
+            if ($this->authType !== null && $this->authType !== "") {
                 $headers['Authorization'] = $this->authToken;
             }
 
@@ -89,7 +90,7 @@ class PdfPrinter implements PdfPrinterInterface {
         }
 
         if (is_callable($callback)) {
-            $callback($this, $this->result, $options);
+            $callback($this, $this->result, $options, $this->result->statusCode === 200);
         }
 
         return $this;
@@ -103,9 +104,15 @@ class PdfPrinter implements PdfPrinterInterface {
      * @param  mixed $callback
      * @return PdfPrinter
      */
-    public function save(String $path, String $disk = null, Callable $callback = null): PdfPrinter {
+    public function save(String $path = null, String $disk = null, Callable $callback = null): PdfPrinter {
 
+        $success = false;
         $filename = "";
+
+
+        if ($path === null) {
+            $path = '';
+        }
 
         if ($this->result->statusCode === 200 && $this->result->uploaded !== true && $this->result->downloadUrl !== null) {
 
@@ -117,7 +124,7 @@ class PdfPrinter implements PdfPrinterInterface {
             $resource = fopen(Storage::disk($disk != null ? $disk : 'local')->path("${path}/$filename"), 'w');
             $stream = \GuzzleHttp\Psr7\stream_for($resource);
 
-            $this->client->request('GET', $this->result->downloadUrl, [
+            $result = $this->client->request('GET', $this->result->downloadUrl, [
                 'headers' => [
                     'Cache-Control' => 'no-cache', 
                     'Content-Type' => 'application/pdf'
@@ -125,10 +132,12 @@ class PdfPrinter implements PdfPrinterInterface {
                 'save_to' => $stream
             ]);
 
+            $success = true;
+
         }
 
         if (is_callable($callback)) {
-            $callback($this, $this->result, $filename, $path);
+            $callback($this, $this->result, $filename, $path, $success);
         }
 
         return $this;

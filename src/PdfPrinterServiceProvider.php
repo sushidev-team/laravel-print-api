@@ -25,7 +25,14 @@ class PdfPrinterServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        
+        // Configs
+        $this->publishes([
+            __DIR__.'/Configs/pdf-printer.php'         => config_path('pdf-printer.php'),
+        ],'pdf-printer');
+
+        $this->mergeConfigFrom(
+            __DIR__.'/Configs/pdf-printer.php', 'pdf-printer.php'
+        );
     }
 
 }

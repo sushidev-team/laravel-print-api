@@ -8,10 +8,10 @@ use GuzzleHttp\Psr7\Response;
 class PdfPrinterResult {
 
      public int $statusCode = 0;
-     public String $requestUrl;
-     public String $downloadUrl;
+     public ?String $requestUrl;
+     public ?String $downloadUrl;
      public bool $uploaded = false;
-     public String $filename;
+     public ?String $filename;
 
      public function __construct(Response $response = null) {
          $json = $response === null ? null : json_decode($response->getBody());

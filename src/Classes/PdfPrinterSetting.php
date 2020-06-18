@@ -8,9 +8,9 @@ class PdfPrinterSetting {
      public String $baseUrl;
      public int $basePort = 3000;
 
-     public function __construct(String $baseUrl, int $port = 3000) {
-        $this->baseUrl  = $baseUrl;
-        $this->basePort = $port;
+     public function __construct(String $baseUrl = null, int $port = null) {
+        $this->baseUrl  = $baseUrl !== null ? $baseUrl : config('pdf-printer.url');
+        $this->basePort = $port !== null ? $port : config('pdf-printer.url');
      }
      
      /**
