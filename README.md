@@ -53,7 +53,3 @@ If you discover a security vulnerability within this package, please send an e-m
 ## License
 
 This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## TODOS:
-- Create tests
-- Finsh the implementation of this package.
