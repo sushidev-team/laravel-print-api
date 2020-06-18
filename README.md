@@ -1,5 +1,5 @@
 # PDF Printer
-This package is a wrapper for the private print-api package from [AMBERSIVE KG](https://ambersive.com). This package requires this endpoint otherwise you will not be able to create any pdf document.
+This package is a wrapper for the [PRINT-API](https://github.com/AMBERSIVE/print-api) from [AMBERSIVE KG](https://ambersive.com). This package requires this endpoint otherwise you will not be able to create any pdf document.
 
 ## Installation
 
