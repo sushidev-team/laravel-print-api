@@ -1,6 +1,6 @@
 {
     "name": "ambersive/pdfprinter",
-    "description": "This package for laravel provides a simple way to create pdf documentations. This packages requires a running instance of the PRINT-API.",
+    "description": "This package for laravel provides a simple way to create pdf documents. This packages requires a running instance of the PRINT-API (also open sourced).",
     "license": "MIT",
     "authors": [
         {
