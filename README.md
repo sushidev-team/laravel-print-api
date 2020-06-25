@@ -45,6 +45,8 @@ $printer->create("http://127.0.0.1:8000", null, function($instance, $result, $op
 });
 ```
 
+## How to create beautiful documents
+While this package is a connection between the print server and your laravel application (so it's a helper method), we also created a package [document-viewer](https://github.com/AMBERSIVE/laravel-document-viewer) which will help you to create printable documents. The document viewer will help you to define the required routes for getting and uploading the files. And it will even give you a smooth way to delare "Printables".
 
 ## Security Vulnerabilities
 
