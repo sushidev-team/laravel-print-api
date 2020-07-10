@@ -1,6 +1,6 @@
 # PDF Printer
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/ed7345b2d07919087ba4/maintainability)](https://codeclimate.com/github/AMBERSIVE/laravel-print-api/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ed7345b2d07919087ba4/maintainability)](https://codeclimate.com/github/AMBERSIVE/laravel-print-api/maintainability) [![Build Status](https://travis-ci.org/AMBERSIVE/laravel-print-api.svg?branch=master)](https://travis-ci.org/AMBERSIVE/laravel-print-api)
 
 This package is a wrapper for the [PRINT-API](https://github.com/AMBERSIVE/print-api) from [AMBERSIVE KG](https://ambersive.com). This package requires this endpoint otherwise you will not be able to create any pdf document.
 
