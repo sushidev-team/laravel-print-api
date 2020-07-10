@@ -1,8 +1,8 @@
 <?php
 
-namespace AMBERSIVE\PdfPrinter\Tests\Unit\Classes;
+namespace AMBERSIVE\Tests\Unit\Classes;
 
-use Tests\TestCase;
+use AMBERSIVE\Tests\TestCase;
 
 use AMBERSIVE\PdfPrinter\Classes\PdfPrinter;
 use AMBERSIVE\PdfPrinter\Classes\PdfPrinterSetting;
