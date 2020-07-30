@@ -4,11 +4,13 @@ namespace AMBERSIVE\PdfPrinter\Classes;
 
 use AMBERSIVE\PdfPrinter\Interfaces\PdfPrinterInterface;
 use AMBERSIVE\PdfPrinter\Classes\PdfPrinterOption;
+use AMBERSIVE\PdfPrinter\Classes\PdfPrinterFile;
 
 use GuzzleHttp\Exception\GuzzleException;
 use \GuzzleHttp\Client;
 
 use \Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 
 use Validator;
 use Storage;
@@ -94,6 +96,33 @@ class PdfPrinter implements PdfPrinterInterface {
         }
 
         return $this;
+    }
+    
+    /**
+     * Returns a collection of all files available on the printer api
+     *
+     * @return Collection
+     */
+    public function listFiles(): Collection {
+
+        $headers = [];
+
+        if ($this->authType !== null && $this->authType !== "") {
+            $headers['Authorization'] = $this->authToken;
+        }
+
+        $response = $this->client->request("GET", $this->settings->url("api/browse"), [
+            'headers' => $headers
+        ]);
+
+        $json = $response === null ? null : json_decode($response->getBody());
+
+        $result = collect($json)->map(function($item){
+            return new PdfPrinterFile($item);
+        });
+
+        return $result;
+
     }
     
     /**

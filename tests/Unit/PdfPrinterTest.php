@@ -238,4 +238,26 @@ class PdfPrinterTest extends TestCase
 
     }
 
+    /**
+     * Test if the method will the listed files from the api endpoint
+     */
+    public function testIfPdfPrinterListWillReturnData(): void {
+
+        $response =  new PdfPrinterMockResponse(200,[
+            [
+                "file" =>  "XXX.pdf",
+                "path" =>  "test/XXX.pd",
+                "created_at" => "2020-06-27T22:27:09.876Z",
+                "updated_at" => "2020-06-27T22:27:09.876Z"
+            ]
+        ]);
+
+        $pdfPrinter = $this->createApiMock([$response]); 
+        $result = $pdfPrinter->listFiles();
+
+        $this->assertNotNull($result);
+        $this->assertEquals(1, $result->count());
+
+    }
+
 }
