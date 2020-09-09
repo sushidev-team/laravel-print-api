@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2020-09-09
+### Added
+- Added support for Laravel 8
+
 ## [0.3.0] - 2020-07-30
 ### Added
 - Added support for the [GET] /api/browse endpoint from the printer-api

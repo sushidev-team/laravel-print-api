@@ -72,9 +72,9 @@ class PdfPrinter implements PdfPrinterInterface {
 
             $response = $this->client->request("POST", $this->settings->url("api/browse"), [
                 'headers' => $headers,
-                'json' => [
+                'json' => array_merge([
                     'url' => $url
-                ]
+                ], $options !== null ? $options->toArray() : []), 
             ]);
 
             $this->result = new PdfPrinterResult($response);
