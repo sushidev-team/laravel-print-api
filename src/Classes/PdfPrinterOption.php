@@ -6,9 +6,9 @@ namespace AMBERSIVE\PdfPrinter\Classes;
 class PdfPrinterOption {
 
      public String $filename;
-     public String $postBackUrl;
+     public ?String $postBackUrl;
      public Array  $postBackBody;
-     public String $token;
+     public ?String $token;
      public bool $autodelete = false;
 
      public function __construct(String $filename, String $postBackUrl = null, Array $postBackBody = [], String $token = null, bool $autodelete = false) {
@@ -28,6 +28,15 @@ class PdfPrinterOption {
       */
      public function getPostBackBody(): String {
          return json_encode($this->postBackBody != null ? $this->postBackBody : []);
+     }
+     
+     /**
+      * Returns the options as an array
+      *
+      * @return void
+      */
+     public function toArray() {
+        return (array) $this;
      }
 
 }
