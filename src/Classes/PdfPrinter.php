@@ -25,13 +25,13 @@ class PdfPrinter implements PdfPrinterInterface {
     public String $authType;
     public String $authToken;
 
-    public function __construct(PdfPrinterSetting $settings = null, \GuzzleHttp\Client $client) {
+    public function __construct(PdfPrinterSetting $settings = null, \GuzzleHttp\Client $client = null) {
         $this->settings = $settings;
         $this->client   = $client !== null ? $client : new Client();
         $this->authType = "";
     }
 
-    public function authBasic(String $type, String $username, String $password): PdfPrinter {
+    public function authBasic(String $username, String $password): PdfPrinter {
         $this->authType  = 'Basic';
         $this->authToken = "Basic ".base64_encode("${username}:${password}");
         return $this;
