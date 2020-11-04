@@ -9,12 +9,14 @@ class PdfPrinterOption {
      public String $postBackUrl;
      public Array  $postBackBody;
      public String $token;
+     public bool $autodelete = false;
 
-     public function __construct(String $filename, String $postBackUrl = null, Array $postBackBody = [], String $token = null) {
+     public function __construct(String $filename, String $postBackUrl = null, Array $postBackBody = [], String $token = null, bool $autodelete = false) {
         $this->filename     = $filename;
         $this->postBackUrl  = $postBackUrl;
         $this->postBackBody = $postBackBody;
         $this->token        = $token;
+        $this->autodelete   = $autodelete;
      }
 
           

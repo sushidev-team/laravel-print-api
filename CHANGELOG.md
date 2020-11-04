@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-11-04
+### Added
+- Added support to trigger automatic file deletion
+
 ## [0.3.5] - 2020-11-04
 ### Fixed
 - Fixed download mechanism
