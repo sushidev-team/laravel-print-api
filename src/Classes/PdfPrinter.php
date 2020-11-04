@@ -150,15 +150,15 @@ class PdfPrinter implements PdfPrinterInterface {
             }
 
             $filename = $this->result->filename != null && $this->result->filename != "" ? $this->result->filename : Str::random(20).".pdf";
-            $resource = fopen(Storage::disk($disk != null ? $disk : 'local')->path("${path}/$filename"), 'w');
-            $stream = \GuzzleHttp\Psr7\stream_for($resource);
+            
+            if(!Storage::disk($disk != null ? $disk : 'local')->exists($path)) {
+                Storage::disk($disk != null ? $disk : 'local')->makeDirectory($path, 0775, true); //creates directory
+            }
 
-            $result = $this->client->request('GET', $this->result->downloadUrl, [
-                'headers' => [
-                    'Cache-Control' => 'no-cache', 
-                    'Content-Type' => 'application/pdf'
-                ],
-                'save_to' => $stream
+            $filename = $this->result->filename != null && $this->result->filename != "" ? $this->result->filename : Str::random(20).".pdf";
+
+            $this->client->request('GET', $this->result->downloadUrl, [
+                'sink' => Storage::disk($disk != null ? $disk : 'local')->path("${path}/$filename")
             ]);
 
             $success = true;

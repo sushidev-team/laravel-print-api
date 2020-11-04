@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2020-11-04
+### Fixed
+- Fixed download mechanism
+
 ## [0.3.4] - 2020-11-04
 ### Fixed
 - Fixed method calls for basic auth
