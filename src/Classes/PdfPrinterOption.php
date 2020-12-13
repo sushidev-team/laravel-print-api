@@ -10,6 +10,7 @@ class PdfPrinterOption
     public ?String $token;
     public bool $autodelete = false;
     public bool $testmode = false;
+    public array $fakeData = [];
 
     public function __construct(String $filename, String $postBackUrl = null, array $postBackBody = [], String $token = null, bool $autodelete = false)
     {
@@ -20,9 +21,13 @@ class PdfPrinterOption
         $this->autodelete = $autodelete;
     }
 
-    public function useTestmode()
+    public function useTestmode(array $fakeData = [])
     {
         $this->testmode = true;
+
+        if (! empty($fakeData)) {
+            $this->fakeData = $fakeData;
+        }
 
         return $this;
     }

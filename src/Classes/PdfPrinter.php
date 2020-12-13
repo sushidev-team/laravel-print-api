@@ -24,6 +24,7 @@ class PdfPrinter implements PdfPrinterInterface
     public String $authToken;
 
     public bool $testmode = false;
+    public array $fakeData = [];
 
     public function __construct(PdfPrinterSetting $settings = null, Client $client = null)
     {
@@ -48,9 +49,20 @@ class PdfPrinter implements PdfPrinterInterface
         return $this;
     }
 
-    public function useTestmode():self
+    public function useTestmode(array $fakeData = []):self
     {
         $this->testmode = true;
+
+        if (! empty($fakeData)) {
+            $this->fakeData = $fakeData;
+        } else {
+            $this->fakeData = [
+                'statusCode' => 200,
+                'uploaded'   => false,
+                'downloadUrl' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                'filename' => 'dummy',
+            ];
+        }
 
         return $this;
     }
@@ -66,7 +78,7 @@ class PdfPrinter implements PdfPrinterInterface
     public function create(String $url, PdfPrinterOption $options = null, callable $callback = null): self
     {
         if ($options !== null && $options->testmode === true) {
-            $this->useTestmode();
+            $this->useTestmode($options->fakeData);
         }
 
         try {
@@ -85,12 +97,7 @@ class PdfPrinter implements PdfPrinterInterface
             }
 
             if ($this->testmode === true) {
-                $response = new GuzzleResponse(200, [], json_encode([
-                    'statusCode' => 200,
-                    'uploaded'   => false,
-                    'downloadUrl' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                    'filename' => 'dummy',
-                ]));
+                $response = new GuzzleResponse(200, [], json_encode($this->fakeData));
             } else {
                 $response = $this->client->request('POST', $this->settings->url('api/browse'), [
                 'headers' => $headers,

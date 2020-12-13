@@ -131,6 +131,23 @@ class PdfPrinterTest extends TestCase
         });
     }
 
+    public function testIfPdfPrinterSupportTestmodeWithCustomFakeData():void
+    {
+        $response = new PdfPrinterMockResponse(200, []);
+        $pdfPrinter = $this->createApiMock([$response]);
+
+        $result = $pdfPrinter->useTestmode([
+            'statusCode' => 200,
+            'uploaded'   => false,
+            'downloadUrl' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+            'filename' => 'monkey',
+        ])->create('http://127.0.0.1:8000', null, function ($instance, $result, $options, $successful) {
+            $this->assertEquals(200, $result->statusCode);
+            $this->assertTrue($successful);
+            $this->assertEquals('monkey.pdf', $result->filename);
+        });
+    }
+
     /**
      * Test if the print request can fail.
      */
