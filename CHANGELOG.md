@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2020-12-13
+### Added
+- Add testmode flag to return dummy data in the create mode.
+
 ## [0.4.1] - 2020-11-04
 ### Added
 - Added toArray()-Method for PdfPrinterOption class

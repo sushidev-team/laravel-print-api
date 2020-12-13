@@ -1,23 +1,21 @@
-<?php 
+<?php
 
 namespace AMBERSIVE\PdfPrinter\Classes;
 
-use AMBERSIVE\PdfPrinter\Interfaces\PdfPrinterInterface;
-use AMBERSIVE\PdfPrinter\Classes\PdfPrinterOption;
 use AMBERSIVE\PdfPrinter\Classes\PdfPrinterFile;
-
+use AMBERSIVE\PdfPrinter\Classes\PdfPrinterOption;
+use AMBERSIVE\PdfPrinter\Interfaces\PdfPrinterInterface;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use \GuzzleHttp\Client;
-
-use \Illuminate\Http\Response;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-
-use Validator;
 use Storage;
 use Str;
+use Validator;
 
-class PdfPrinter implements PdfPrinterInterface {
-
+class PdfPrinter implements PdfPrinterInterface
+{
     public ?PdfPrinterResult $result;
     public PdfPrinterSetting $settings;
     public Client $client;
@@ -25,70 +23,90 @@ class PdfPrinter implements PdfPrinterInterface {
     public String $authType;
     public String $authToken;
 
-    public function __construct(PdfPrinterSetting $settings = null, \GuzzleHttp\Client $client = null) {
+    public bool $testmode = false;
+
+    public function __construct(PdfPrinterSetting $settings = null, Client $client = null)
+    {
         $this->settings = $settings;
-        $this->client   = $client !== null ? $client : new Client();
-        $this->authType = "";
+        $this->client = $client !== null ? $client : new Client();
+        $this->authType = '';
     }
 
-    public function authBasic(String $username, String $password): PdfPrinter {
-        $this->authType  = 'Basic';
-        $this->authToken = "Basic ".base64_encode("${username}:${password}");
+    public function authBasic(String $username, String $password): self
+    {
+        $this->authType = 'Basic';
+        $this->authToken = 'Basic '.base64_encode("${username}:${password}");
+
         return $this;
     }
 
-    public function authBearer(String $token): PdfPrinter {
-        $this->authType  = 'Bearer';
+    public function authBearer(String $token): self
+    {
+        $this->authType = 'Bearer';
         $this->authToken = "$this->authType ${token}";
+
         return $this;
     }
-    
+
+    public function useTestmode():self
+    {
+        $this->testmode = true;
+
+        return $this;
+    }
+
     /**
-     * Send a print request to the print api
+     * Send a print request to the print api.
      *
      * @param  mixed $url
      * @param  mixed $options
      * @param  mixed $callback
      * @return PdfPrinter
      */
-    public function create(String $url, PdfPrinterOption $options = null, Callable $callback = null): PdfPrinter {
+    public function create(String $url, PdfPrinterOption $options = null, callable $callback = null): self
+    {
+        if ($options !== null && $options->testmode === true) {
+            $this->useTestmode();
+        }
 
         try {
-
             $validator = Validator::make(['url' => $url], [
-                'url' => 'required|url'
+                'url' => 'required|url',
             ]);
 
-    
             if ($validator->fails()) {
                 throw Exception('missing url');
             }
 
             $headers = [];
 
-            if ($this->authType !== null && $this->authType !== "") {
+            if ($this->authType !== null && $this->authType !== '') {
                 $headers['Authorization'] = $this->authToken;
             }
 
-            $response = $this->client->request("POST", $this->settings->url("api/browse"), [
+            if ($this->testmode === true) {
+                $response = new GuzzleResponse(200, [], json_encode([
+                    'statusCode' => 200,
+                    'uploaded'   => false,
+                    'downloadUrl' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    'filename' => 'dummy',
+                ]));
+            } else {
+                $response = $this->client->request('POST', $this->settings->url('api/browse'), [
                 'headers' => $headers,
                 'json' => array_merge([
-                    'url' => $url
-                ], $options !== null ? $options->toArray() : []), 
+                    'url' => $url,
+                ], $options !== null ? $options->toArray() : []),
             ]);
+            }
 
             $this->result = new PdfPrinterResult($response);
-
         } catch (\GuzzleHttp\Exception\ServerException $ex) {
-
             $this->result = new PdfPrinterResult();
             $this->result->statusCode = 500;
-            
         } catch (\GuzzleHttp\Exception\ClientException $ex) {
-
             $this->result = new PdfPrinterResult();
             $this->result->statusCode = $ex->getResponse()->getStatusCode();
-
         }
 
         if (is_callable($callback)) {
@@ -97,34 +115,33 @@ class PdfPrinter implements PdfPrinterInterface {
 
         return $this;
     }
-    
+
     /**
-     * Returns a collection of all files available on the printer api
+     * Returns a collection of all files available on the printer api.
      *
      * @return Collection
      */
-    public function listFiles(): Collection {
-
+    public function listFiles(): Collection
+    {
         $headers = [];
 
-        if ($this->authType !== null && $this->authType !== "") {
+        if ($this->authType !== null && $this->authType !== '') {
             $headers['Authorization'] = $this->authToken;
         }
 
-        $response = $this->client->request("GET", $this->settings->url("api/browse"), [
-            'headers' => $headers
+        $response = $this->client->request('GET', $this->settings->url('api/browse'), [
+            'headers' => $headers,
         ]);
 
         $json = $response === null ? null : json_decode($response->getBody());
 
-        $result = collect($json)->map(function($item){
+        $result = collect($json)->map(function ($item) {
             return new PdfPrinterFile($item);
         });
 
         return $result;
-
     }
-    
+
     /**
      * Downlaod the pdf document if the the endpoint failed uploading it.
      *
@@ -133,36 +150,33 @@ class PdfPrinter implements PdfPrinterInterface {
      * @param  mixed $callback
      * @return PdfPrinter
      */
-    public function save(String $path = null, String $disk = null, Callable $callback = null): PdfPrinter {
-
+    public function save(String $path = null, String $disk = null, callable $callback = null): self
+    {
         $success = false;
-        $filename = "";
-
+        $filename = '';
 
         if ($path === null) {
             $path = '';
         }
 
         if ($this->result->statusCode === 200 && $this->result->uploaded !== true && $this->result->downloadUrl !== null) {
-
-            if(!Storage::disk($disk != null ? $disk : 'local')->exists($path)) {
+            if (! Storage::disk($disk != null ? $disk : 'local')->exists($path)) {
                 Storage::disk($disk != null ? $disk : 'local')->makeDirectory($path, 0775, true); //creates directory
             }
 
-            $filename = $this->result->filename != null && $this->result->filename != "" ? $this->result->filename : Str::random(20).".pdf";
-            
-            if(!Storage::disk($disk != null ? $disk : 'local')->exists($path)) {
+            $filename = $this->result->filename != null && $this->result->filename != '' ? $this->result->filename : Str::random(20).'.pdf';
+
+            if (! Storage::disk($disk != null ? $disk : 'local')->exists($path)) {
                 Storage::disk($disk != null ? $disk : 'local')->makeDirectory($path, 0775, true); //creates directory
             }
 
-            $filename = $this->result->filename != null && $this->result->filename != "" ? $this->result->filename : Str::random(20).".pdf";
+            $filename = $this->result->filename != null && $this->result->filename != '' ? $this->result->filename : Str::random(20).'.pdf';
 
             $this->client->request('GET', $this->result->downloadUrl, [
-                'sink' => Storage::disk($disk != null ? $disk : 'local')->path("${path}/$filename")
+                'sink' => Storage::disk($disk != null ? $disk : 'local')->path("${path}/$filename"),
             ]);
 
             $success = true;
-
         }
 
         if (is_callable($callback)) {
@@ -171,5 +185,4 @@ class PdfPrinter implements PdfPrinterInterface {
 
         return $this;
     }
-
 }
