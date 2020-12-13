@@ -120,6 +120,9 @@ class PdfPrinter implements PdfPrinterInterface
             $callback($this, $this->result, $options, $this->result->statusCode === 200);
         }
 
+        // reset the testmode
+        $this->testmode = false;
+
         return $this;
     }
 
