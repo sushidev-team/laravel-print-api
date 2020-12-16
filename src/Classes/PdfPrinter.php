@@ -33,17 +33,32 @@ class PdfPrinter implements PdfPrinterInterface
         $this->authType = '';
     }
 
-    public function authBasic(String $username, String $password): self
+    public function authBasic(?String $username = null, ?String $password = null): self
     {
+        if ($this->testmode === true) {
+            return $this;
+        }
+
+        if ($username === null || $password === null) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'credentials' => ['username or password is missing.'],
+            ]);
+        }
+
         $this->authType = 'Basic';
         $this->authToken = 'Basic '.base64_encode("${username}:${password}");
 
         return $this;
     }
 
-    public function authBearer(String $token): self
+    public function authBearer(?String $token): self
     {
         $this->authType = 'Bearer';
+
+        if ($token === null) {
+            $token = '';
+        }
+
         $this->authToken = "$this->authType ${token}";
 
         return $this;
@@ -87,7 +102,9 @@ class PdfPrinter implements PdfPrinterInterface
             ]);
 
             if ($validator->fails()) {
-                throw Exception('missing url');
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'url' => ['url is missing'],
+                ]);
             }
 
             $headers = [];

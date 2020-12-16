@@ -275,4 +275,26 @@ class PdfPrinterTest extends TestCase
         $this->assertNotNull($result);
         $this->assertEquals(1, $result->count());
     }
+
+    public function testIfPdfPrinterBasicAuthHasMissingParametersItStillWorksInTestingMode(): void
+    {
+        $response = new PdfPrinterMockResponse(200, []);
+        $pdfPrinter = $this->createApiMock([$response]);
+
+        $result = $pdfPrinter->useTestmode()->authBasic(null, null)->create('http://127.0.0.1:8000', null, function ($instance, $result, $options, $successful) {
+            $this->assertEquals(200, $result->statusCode);
+            $this->assertTrue($successful);
+            $this->assertEquals('dummy.pdf', $result->filename);
+        });
+    }
+
+    public function testIfPdfPrinterBasicAuthMethodThrowExeceptionInNoneTestMode(): void
+    {
+        $response = new PdfPrinterMockResponse(200, []);
+        $pdfPrinter = $this->createApiMock([$response]);
+
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $result = $pdfPrinter->authBasic(null, null)->create('http://127.0.0.1:8000', null);
+    }
 }

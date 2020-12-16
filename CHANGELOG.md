@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2020-12-16
+### Fixed
+- The basic auth method does not requires valid username/password in testmode
+- Throw default validation exception if url is missing or credentials are not passed
+
 ## [0.4.2] - 2020-12-13
 ### Added
 - Add testmode flag to return dummy data in the create mode.
